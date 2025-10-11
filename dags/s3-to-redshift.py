@@ -1,5 +1,6 @@
-from airflow.decorators import dag
+from airflow.sdk import dag
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from datetime import datetime
 
 @dag(
@@ -10,6 +11,13 @@ from datetime import datetime
 )
 def s3_to_redshift():
 
+
+    truncate_disease_report = SQLExecuteQueryOperator(
+        task_id='truncate_disease_report',
+        conn_id='redshift_conn',
+        sql="TRUNCATE TABLE staging.staging_disease_report;"
+    )
+
     load_disease_report = S3ToRedshiftOperator(
         task_id='load_disease_report',
         s3_bucket='datathon.phc',
@@ -19,6 +27,12 @@ def s3_to_redshift():
         copy_options=['CSV', 'IGNOREHEADER 1'],
         aws_conn_id='aws_conn',
         redshift_conn_id='redshift_conn'
+    )
+
+    truncate_health_workers = SQLExecuteQueryOperator(
+        task_id='truncate_health_workers',
+        conn_id='redshift_conn',
+        sql="TRUNCATE TABLE staging.staging_health_workers;"
     )
 
     load_health_workers = S3ToRedshiftOperator(
@@ -32,6 +46,12 @@ def s3_to_redshift():
         redshift_conn_id='redshift_conn'
     )
 
+    truncate_inventory_dataset = SQLExecuteQueryOperator(
+        task_id='truncate_inventory_dataset',
+        conn_id='redshift_conn',
+        sql="TRUNCATE TABLE staging.staging_inventory_dataset;"
+    )
+
     load_inventory_dataset = S3ToRedshiftOperator(
         task_id='load_inventory_dataset',
         s3_bucket='datathon.phc',
@@ -43,15 +63,27 @@ def s3_to_redshift():
         redshift_conn_id='redshift_conn'
     )
 
+    truncate_Nigeria_phc = SQLExecuteQueryOperator(
+        task_id='truncate_nigeria_phc',
+        conn_id='redshift_conn',
+        sql="TRUNCATE TABLE staging.staging_nigeria_phc;"
+    )
+
     load_Nigeria_phc = S3ToRedshiftOperator(
         task_id='load_Nigeria_phc',
         s3_bucket='datathon.phc',
-        s3_key='raw_data/Nigeria_phc_3200.csv',
+        s3_key='raw_data/Nigeria_phc_32000.csv',
         schema='staging',
         table='staging_Nigeria_phc',
         copy_options=['CSV', 'IGNOREHEADER 1'],
         aws_conn_id='aws_conn',
         redshift_conn_id='redshift_conn'
+    )
+
+    truncate_patients_dataset = SQLExecuteQueryOperator(
+        task_id='truncate_patients_dataset',
+        conn_id='redshift_conn',
+        sql="TRUNCATE TABLE staging.staging_patients_dataset;"
     )
 
     load_patients_dataset = S3ToRedshiftOperator(
@@ -66,6 +98,10 @@ def s3_to_redshift():
     )
 
     
-    load_disease_report >> load_health_workers >> load_inventory_dataset >>load_Nigeria_phc >> load_patients_dataset
+    truncate_disease_report >> load_disease_report 
+    truncate_health_workers >> load_health_workers
+    truncate_inventory_dataset >> load_inventory_dataset 
+    truncate_Nigeria_phc >> load_Nigeria_phc 
+    truncate_patients_dataset >> load_patients_dataset
 
 s3_to_redshift()

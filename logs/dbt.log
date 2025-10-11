@@ -1,0 +1,105 @@
+[0m04:22:19.757091 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7014ade36c30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7014adf7ec90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7014ad8211f0>]}
+
+
+============================== 04:22:19.826212 | 88a67a3a-6901-4ef4-bae7-e51e6e9b7dff ==============================
+[0m04:22:19.826212 [info ] [MainThread]: Running with dbt=1.11.0-b3
+[0m04:22:19.830417 [debug] [MainThread]: running dbt with arguments {'fail_fast': 'False', 'use_colors': 'True', 'log_path': 'logs', 'warn_error': 'None', 'partial_parse': 'True', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True', 'version_check': 'True', 'target_path': 'None', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'write_json': 'True', 'debug': 'False', 'invocation_command': 'dbt init', 'use_experimental_parser': 'False', 'no_print': 'None', 'printer_width': '80', 'log_format': 'default', 'cache_selected_only': 'False', 'log_cache_events': 'False', 'quiet': 'False', 'profiles_dir': '/home/olajide/.dbt', 'indirect_selection': 'eager', 'empty': 'None'}
+[0m04:22:21.078863 [info ] [MainThread]: Creating dbt configuration folder at /home/olajide/.dbt
+[0m04:24:41.334978 [debug] [MainThread]: Starter project path: /mnt/c/Users/AbdullAteef/Documents/DatafestHackaton2025_Team_xyz/dbt_env/lib/python3.12/site-packages/dbt/include/starter_project
+[0m04:24:42.397564 [info ] [MainThread]: 
+Your new dbt project "dbt_transformations_datathon" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m04:24:42.402143 [info ] [MainThread]: Setting up your profile.
+[0m04:24:59.515243 [debug] [MainThread]: Redshift adapter: Setting redshift_connector to ERROR
+[0m04:24:59.519291 [debug] [MainThread]: Redshift adapter: Setting redshift_connector.core to ERROR
+[0m04:40:00.966894 [info ] [MainThread]: Profile dbt_transformations_datathon written to /home/olajide/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+[0m04:40:00.999197 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 1061.6425, "process_in_blocks": "21776", "process_kernel_time": 4.849602, "process_mem_max_rss": "111728", "process_out_blocks": "8", "process_user_time": 5.847028}
+[0m04:40:01.004925 [debug] [MainThread]: Command `dbt init` succeeded at 04:40:01.004163 after 1061.65 seconds
+[0m04:40:01.015511 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7014ad8211f0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7014b109bc50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7014acf5c6e0>]}
+[0m04:40:01.021046 [debug] [MainThread]: Flushing usage events
+[0m04:40:04.910177 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m04:42:10.135290 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x720875585910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7208731ad070>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x720872f78800>]}
+
+
+============================== 04:42:10.203396 | 181af20f-dba1-4196-9fa5-0a97296818e8 ==============================
+[0m04:42:10.203396 [info ] [MainThread]: Running with dbt=1.11.0-b3
+[0m04:42:10.206371 [debug] [MainThread]: running dbt with arguments {'profiles_dir': '/home/olajide/.dbt', 'static_parser': 'True', 'no_print': 'None', 'empty': 'None', 'version_check': 'True', 'cache_selected_only': 'False', 'debug': 'False', 'quiet': 'False', 'partial_parse': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'use_experimental_parser': 'False', 'log_path': 'logs', 'write_json': 'True', 'fail_fast': 'False', 'introspect': 'True', 'use_colors': 'True', 'invocation_command': 'dbt debug', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'printer_width': '80', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True', 'warn_error': 'None'}
+[0m04:42:10.722122 [info ] [MainThread]: dbt version: 1.11.0-b3
+[0m04:42:10.725084 [info ] [MainThread]: python version: 3.12.3
+[0m04:42:10.729108 [info ] [MainThread]: python path: /mnt/c/Users/AbdullAteef/Documents/DatafestHackaton2025_Team_xyz/dbt_env/bin/python3
+[0m04:42:10.734089 [info ] [MainThread]: os info: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+[0m04:42:13.650132 [debug] [MainThread]: Redshift adapter: Setting redshift_connector to ERROR
+[0m04:42:13.651944 [debug] [MainThread]: Redshift adapter: Setting redshift_connector.core to ERROR
+[0m04:42:14.258819 [info ] [MainThread]: Using profiles dir at /home/olajide/.dbt
+[0m04:42:14.261460 [info ] [MainThread]: Using profiles.yml file at /home/olajide/.dbt/profiles.yml
+[0m04:42:14.266551 [info ] [MainThread]: Using dbt_project.yml file at /mnt/c/Users/AbdullAteef/Documents/DatafestHackaton2025_Team_xyz/dbt_project.yml
+[0m04:42:14.304442 [info ] [MainThread]: adapter type: redshift
+[0m04:42:14.308225 [info ] [MainThread]: adapter version: 1.9.5
+[0m04:42:14.314875 [info ] [MainThread]: Configuration:
+[0m04:42:14.317443 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m04:42:14.320161 [info ] [MainThread]:   dbt_project.yml file [[31mERROR not found[0m]
+[0m04:42:14.329781 [info ] [MainThread]: Required dependencies:
+[0m04:42:14.333807 [debug] [MainThread]: Executing "git --help"
+[0m04:42:14.356540 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--config-env=<name>=<envvar>] <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m04:42:14.360401 [debug] [MainThread]: STDERR: "b''"
+[0m04:42:14.364310 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m04:42:14.367504 [info ] [MainThread]: Connection:
+[0m04:42:14.370776 [info ] [MainThread]:   host: dfa-datafest.962626097808.eu-north-1.redshift-serverless.amazonaws.com
+[0m04:42:14.383756 [info ] [MainThread]:   user: admin
+[0m04:42:14.386806 [info ] [MainThread]:   port: 5439
+[0m04:42:14.390092 [info ] [MainThread]:   database: datafest
+[0m04:42:14.399279 [info ] [MainThread]:   method: database
+[0m04:42:14.402545 [info ] [MainThread]:   cluster_id: None
+[0m04:42:14.418923 [info ] [MainThread]:   iam_profile: None
+[0m04:42:14.434198 [info ] [MainThread]:   schema: intermediate
+[0m04:42:14.451218 [info ] [MainThread]:   sslmode: prefer
+[0m04:42:14.461610 [info ] [MainThread]:   region: None
+[0m04:42:14.468807 [info ] [MainThread]:   sslmode: prefer
+[0m04:42:14.478808 [info ] [MainThread]:   region: None
+[0m04:42:14.483366 [info ] [MainThread]:   autocreate: False
+[0m04:42:14.487837 [info ] [MainThread]:   db_groups: []
+[0m04:42:14.494363 [info ] [MainThread]:   ra3_node: False
+[0m04:42:14.497393 [info ] [MainThread]:   connect_timeout: None
+[0m04:42:14.500569 [info ] [MainThread]:   role: None
+[0m04:42:14.505654 [info ] [MainThread]:   retries: 1
+[0m04:42:14.512996 [info ] [MainThread]:   retry_all: False
+[0m04:42:14.518144 [info ] [MainThread]:   autocommit: True
+[0m04:42:14.533484 [info ] [MainThread]:   access_key_id: None
+[0m04:42:14.535649 [info ] [MainThread]:   is_serverless: None
+[0m04:42:14.538122 [info ] [MainThread]:   serverless_work_group: None
+[0m04:42:14.544317 [info ] [MainThread]:   serverless_acct_id: None
+[0m04:42:14.550673 [info ] [MainThread]: Registered adapter: redshift=1.9.5
+[0m04:42:40.041327 [debug] [MainThread]: Acquiring new redshift connection 'debug'
+[0m04:42:40.053130 [debug] [MainThread]: Using redshift connection "debug"
+[0m04:42:40.055226 [debug] [MainThread]: On debug: select 1 as id
+[0m04:42:40.057671 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m04:42:40.060191 [debug] [MainThread]: Redshift adapter: Connecting to Redshift with 'database' credentials method
+[0m04:42:40.071053 [debug] [MainThread]: Redshift adapter: Establishing connection using ssl with `sslmode` set to 'prefer'.To connect without ssl, set `sslmode` to 'disable'.
+[0m04:42:46.111552 [debug] [MainThread]: SQL status: SUCCESS in 6.054 seconds
+[0m04:42:56.296841 [debug] [MainThread]: On debug: Close
+[0m04:42:56.299627 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m04:42:56.302579 [info ] [MainThread]: [31m1 check failed:[0m
+[0m04:42:56.304753 [info ] [MainThread]: Project loading failed for the following reason:
+ project path </mnt/c/Users/AbdullAteef/Documents/DatafestHackaton2025_Team_xyz/dbt_project.yml> not found
+
+[0m04:42:56.312072 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 46.501526, "process_in_blocks": "17736", "process_kernel_time": 6.819016, "process_mem_max_rss": "120480", "process_out_blocks": "8", "process_user_time": 7.155075}
+[0m04:42:56.315135 [debug] [MainThread]: Command `dbt debug` failed at 04:42:56.314777 after 46.50 seconds
+[0m04:42:56.317527 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m04:42:56.320512 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x72087342e2a0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7208725702c0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x720870dec290>]}
+[0m04:42:56.323477 [debug] [MainThread]: Flushing usage events
+[0m04:42:59.907073 [debug] [MainThread]: An error was encountered while trying to flush usage events
