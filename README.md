@@ -5,22 +5,23 @@ Data Engineering Pipeline — Datafest Hackathon 2025 (Team XYZ)
 This project implements a data engineering pipeline that automates the flow of raw data from Amazon S3 into Amazon Redshift, transforms it using dbt (Data Build Tool), and orchestrates the entire process with Apache Airflow.
 
 Architecture
+=================================
 
+- s3-to-redshift.py: Copies CSV files from S3 to Redshift staging tables using S3ToRedshiftOperator.
 
-s3-to-redshift.py: Copies CSV files from S3 to Redshift staging tables using S3ToRedshiftOperator.
+- dbt_transformations.py: Triggers dbt transformations after data load completion.
 
-dbt_transformations.py: Triggers dbt transformations after data load completion.
-
-dbt: Cleans, models, and materializes data into analytics-ready schemas.
+- dbt: Cleans, models, and materializes data into analytics-ready schemas.
 
 
 Tech Stack
+=================================
 
-Orchestration: Apache Airflow
-Transformation: dbt + Redshift
-Storage: AWS S3
-Data Warehouse: Amazon Redshift Serverless
-Environment: WSL (Ubuntu)
+- Orchestration: Apache Airflow
+- Transformation: dbt + Redshift
+- Storage: AWS S3
+- Data Warehouse: Amazon Redshift Serverless
+- Environment: WSL (Ubuntu)
 
 Project Contents
 ================
@@ -28,7 +29,7 @@ Project Contents
 This project contains some important files and folders:
 
 - dags: This folder contains the Python files for Airflow DAGs:
-    - `s3-to-redshift.py`: This DAG automates the process of moving raw data from Amazon s3 bucket into Amazon redshift, and into staging schema for later transformation.
+    `s3-to-redshift.py`: This DAG automates the process of moving raw data from Amazon s3 bucket into Amazon redshift, and into staging schema for later transformation.
 - Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
 - include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
 - requirements.txt: This was used to install important requireents like amazon and Postgres providers. Without then, airflow can not connect to these services
@@ -59,11 +60,11 @@ Start Airflow on your local machine
 ```
 When project image has been buily, open the browser to the Airflow UI at http://localhost:8080/
 
-Run s3_to_redshift dag from the airflow UI, it then loads S3 data into Redshift staging schema.
-Run dbt_transformations dag to activate dbt environment and executes dbt run.
+- Run s3_to_redshift dag from the airflow UI, it then loads S3 data into Redshift staging schema.
+- Run dbt_transformations dag to activate dbt environment and executes dbt run.
 
 Notes
 =================================
 
-This pipeline is idempotent, staging tables in redshift are truncated before reloading.
-Airflow connection to s3 bucket and redshift were done via the airflow UI and not hardcoded.
+- This pipeline is idempotent, staging tables in redshift are truncated before reloading.
+- Airflow connection to s3 bucket and redshift were done via the airflow UI and not hardcoded.
