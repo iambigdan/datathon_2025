@@ -32,42 +32,38 @@ This project contains some important files and folders:
 - Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
 - include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
 - requirements.txt: This was used to install important requireents like amazon and Postgres providers. Without then, airflow can not connect to these services
-- dbt_env: This folder contains the virtual environment for dbt.It isolates all dbt related dependencies from the main Airflow environment, ensuring clean version management and reproducible builds. Please note that it is system-specific. It was Created using:  
+- dbt_env: This folder contains the virtual environment for dbt. It isolates all dbt related dependencies from the main Airflow environment, ensuring clean version management and reproducible builds. Please note that it is system-specific. It was Created using:  
  ```
   python3 -m venv dbt_env.
 
 ```
 Activated with:
+```
   source dbt_env/bin/activate
+```
 Deactivated with:
+```
   deactivate
+```
 
 - dbt_transformations_datathon: This is the part responsible for transforming and modeling data in Amazon Redshift after Airflow has ingested to staging schema.
 
 
-Deploy Your Project Locally
+Running the Pipeline
 ===========================
 
-Start Airflow on your local machine by running 'astro dev start'.
+Start Airflow on your local machine
+```
+ 'astro dev start'.
 
-This command will spin up five Docker containers on your machine, each for a different Airflow component:
+```
+When project image has been buily, open the browser to the Airflow UI at http://localhost:8080/
 
-- Postgres: Airflow's Metadata Database
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
-- API Server: The Airflow component responsible for serving the Airflow UI and API
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+Run s3_to_redshift dag from the airflow UI, it then loads S3 data into Redshift staging schema.
+Run dbt_transformations dag to activate dbt environment and executes dbt run.
 
-When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
-
-Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
-
-Deploy Your Project to Astronomer
+Notes
 =================================
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
-
-Contact
-=======
-
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+This pipeline is idempotent, staging tables in redshift are truncated before reloading.
+Airflow connection to s3 bucket and redshift were done via the airflow UI and not hardcoded.
