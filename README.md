@@ -1,21 +1,49 @@
 Overview
 ========
+Data Engineering Pipeline — Datafest Hackathon 2025 (Team XYZ)
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+This project implements a data engineering pipeline that automates the flow of raw data from Amazon S3 into Amazon Redshift, transforms it using dbt (Data Build Tool), and orchestrates the entire process with Apache Airflow.
+
+Architecture
+
+
+s3-to-redshift.py: Copies CSV files from S3 to Redshift staging tables using S3ToRedshiftOperator.
+
+dbt_transformations.py: Triggers dbt transformations after data load completion.
+
+dbt: Cleans, models, and materializes data into analytics-ready schemas.
+
+
+Tech Stack
+
+Orchestration: Apache Airflow
+Transformation: dbt + Redshift
+Storage: AWS S3
+Data Warehouse: Amazon Redshift Serverless
+Environment: WSL (Ubuntu)
 
 Project Contents
 ================
 
-Your Astro project contains the following files and folders:
+This project contains some important files and folders:
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
+- dags: This folder contains the Python files for Airflow DAGs:
+    - `s3-to-redshift.py`: This DAG automates the process of moving raw data from Amazon s3 bucket into Amazon redshift, and into staging schema for later transformation.
 - Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
 - include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+- requirements.txt: This was used to install important requireents like amazon and Postgres providers. Without then, airflow can not connect to these services
+- dbt_env: This folder contains the virtual environment for dbt.It isolates all dbt related dependencies from the main Airflow environment, ensuring clean version management and reproducible builds. Please note that it is system-specific. It was Created using:  
+ ```
+  python3 -m venv dbt_env.
+
+```
+Activated with:
+  source dbt_env/bin/activate
+Deactivated with:
+  deactivate
+
+- dbt_transformations_datathon: This is the part responsible for transforming and modeling data in Amazon Redshift after Airflow has ingested to staging schema.
+
 
 Deploy Your Project Locally
 ===========================
