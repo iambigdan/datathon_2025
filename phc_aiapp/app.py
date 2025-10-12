@@ -147,7 +147,7 @@ if tab_selection == "PHC Chatbot":
         response = "I’m not sure how to answer that yet."
 
         # -----------------------
-        # Consider only Functional / Partially Functional facilities
+        # Filter only Functional / Partially Functional facilities
         # -----------------------
         operational_facilities = facilities_df[
             facilities_df["operational_status"].str.lower().isin(["functional", "partially functional"])
@@ -167,6 +167,7 @@ if tab_selection == "PHC Chatbot":
         # -----------------------
         if any(word in query for word in ["stock", "inventory", "medicine", "item", "paracetamol"]):
             filtered_facilities = operational_facilities.copy()
+
             # Filter by state/LGA if mentioned
             for state in operational_facilities["state"].unique():
                 if state.lower() in query:
@@ -259,7 +260,6 @@ if tab_selection == "PHC Chatbot":
 
         # Display assistant message
         st.chat_message("assistant").markdown(response_translated, unsafe_allow_html=True)
-
 
 # -----------------------------
 # 3. Disease Forecasting
