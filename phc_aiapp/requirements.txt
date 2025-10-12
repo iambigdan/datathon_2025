@@ -1,9 +1,8 @@
 streamlit
 pandas
-plotly==5.24.1
-psycopg2-binary
+numpy
 sqlalchemy
+psycopg2-binary
+plotly
 prophet
-deep-translator==1.11.4
-python-dotenv
-
+deep-translator
