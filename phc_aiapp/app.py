@@ -56,10 +56,13 @@ def load_table(table_name, columns, limit=1000):
     return df
 
 # -----------------------------
-# Load All Tables
+# Load Tables
 # -----------------------------
 facilities_df = load_table(TABLE_FACILITIES,
                            "facility_id, facility_name, state, lga, ownership, type, latitude, longitude, operational_status, number_of_beds, average_daily_patients, health_workers")
+
+# Filter only functional/partially functional
+facilities_df = facilities_df[facilities_df["operational_status"].str.lower().isin(["functional", "partially functional"])]
 
 workers_df = load_table(TABLE_WORKERS,
                         "worker_id, facility_id, name, role, qualification, years_experience, gender, specialization, shift, availability_status")
@@ -77,10 +80,9 @@ inventory_df = load_table(TABLE_INVENTORY,
 inventory_df["last_restock_date"] = pd.to_datetime(inventory_df["last_restock_date"], errors="coerce")
 
 # -----------------------------
-# Streamlit Sidebar & Tabs
+# Streamlit Config
 # -----------------------------
 st.set_page_config(page_title="PHC AI Dashboard", layout="wide")
-
 st.sidebar.title("🏥 PHC Dashboard")
 tab_selection = st.sidebar.radio("Navigation", [
     "Facility Dashboard", "PHC Chatbot", "Disease Forecasting", "Inventory Overview", "Operational Status"
@@ -96,7 +98,6 @@ if tab_selection == "Facility Dashboard":
     facility_id = facility["facility_id"].values[0]
 
     st.subheader(f"📍 {facility_name}")
-    # Metrics
     st.metric("👩‍⚕️ Number of Health Workers",
               len(workers_df[workers_df["facility_id"] == facility_id]))
     st.metric("🏥 Number of Beds",
@@ -104,7 +105,6 @@ if tab_selection == "Facility Dashboard":
     st.metric("👨‍👩‍👧‍👦 Average Daily Patients",
               int(facility["average_daily_patients"].values[0]))
 
-    # Patient visits chart
     visits_df = patients_df[patients_df["facility_id"] == facility_id]
     if not visits_df.empty:
         visits_chart = visits_df.groupby("visit_date").size().reset_index(name="visits")
@@ -115,45 +115,93 @@ if tab_selection == "Facility Dashboard":
 # 2. PHC Chatbot
 # -----------------------------
 elif tab_selection == "PHC Chatbot":
-    st.header("🤖 PHC Chatbot Assistant")
-
+    st.header("🤖 PHC AI Chatbot Assistant")
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    selected_facility_name = st.selectbox("Select Facility", facilities_df["facility_name"].unique())
-    selected_facility_id = facilities_df[facilities_df["facility_name"] == selected_facility_name]["facility_id"].values[0]
-
-    items_list = inventory_df[inventory_df["facility_id"] == selected_facility_id]["item_name"].unique()
-    selected_item = st.selectbox("Select Item (optional)", ["Any"] + list(items_list))
-
     lang = st.selectbox("Select Language", list(LANG_MAP.keys()), index=0)
-    user_query = st.text_input("Type your question here...")
+    user_input = st.chat_input("Ask a question about a facility, stock, workers, patients, or disease...")
 
-    if st.button("Send") and user_query:
-        query_lower = user_query.lower()
+    if user_input:
+        st.chat_message("user").write(user_input)
+        query = user_input.lower()
         response = "I’m not sure how to answer that yet."
 
-        # Stock query handling
-        if "stock" in query_lower or "inventory" in query_lower:
-            items = inventory_df[inventory_df["facility_id"] == selected_facility_id]
-            if selected_item != "Any":
-                items = items[items["item_name"].str.contains(selected_item, case=False)]
-            if not items.empty:
-                low_stock_items = items[items["stock_level"].astype(int) <= items["reorder_level"].astype(int)]
-                response = "Here’s the stock status:\n" + items[["item_name", "stock_level", "reorder_level"]].to_string(index=False)
-                if not low_stock_items.empty:
-                    response += "\n\n⚠️ Low stock alert for:\n" + low_stock_items["item_name"].to_string(index=False)
+        # Facility Detection
+        facility_match = [name for name in facilities_df["facility_name"] if name.lower() in query]
+        f_id = None
+        if facility_match:
+            facility_name = facility_match[0]
+            f_id = facilities_df[facilities_df["facility_name"] == facility_name]["facility_id"].values[0]
 
-        st.session_state.chat_history.append(("You", user_query))
-        st.session_state.chat_history.append(("Bot", translate_text(response, lang)))
+        # Stock / Inventory
+        if any(word in query for word in ["stock", "inventory", "medicine", "item"]):
+            if f_id:
+                items = inventory_df[inventory_df["facility_id"] == f_id]
+                item_match = [item for item in items["item_name"] if item.lower() in query]
+                if item_match:
+                    item_name = item_match[0]
+                    stock_level = int(items[items["item_name"] == item_name]["stock_level"].values[0])
+                    reorder_level = int(items[items["item_name"] == item_name]["reorder_level"].values[0])
+                    color = "green" if stock_level >= reorder_level else "red"
+                    response = f"**{item_name}** in **{facility_name}**:\nStock: <span style='color:{color}'>{stock_level}</span>\nReorder Level: {reorder_level}"
+                else:
+                    response = f"Items in **{facility_name}**:\n" + ", ".join(items["item_name"].tolist())
+            else:
+                response = "Please specify a facility to check stock."
 
-    # Display chat history with colors
-    for speaker, message in st.session_state.get("chat_history", []):
-        if speaker == "You":
-            st.markdown(f"<div style='text-align:right; background-color:#D6EAF8; color:#1B4F72; padding:10px; border-radius:10px; margin:4px 0'>{message}</div>", unsafe_allow_html=True)
-        else:
-            message = message.replace("⚠️ Low stock alert", "<span style='color:red; font-weight:bold'>⚠️ Low stock alert</span>")
-            st.markdown(f"<div style='text-align:left; background-color:#FADBD8; color:#641E16; padding:10px; border-radius:10px; margin:4px 0'>{message}</div>", unsafe_allow_html=True)
+        # Operational Status
+        elif any(word in query for word in ["operational", "running", "active"]):
+            operational_facilities = facilities_df.copy()
+            for state in facilities_df["state"].unique():
+                if state.lower() in query:
+                    operational_facilities = operational_facilities[operational_facilities["state"].str.lower() == state.lower()]
+            for lga in facilities_df["lga"].unique():
+                if lga.lower() in query:
+                    operational_facilities = operational_facilities[operational_facilities["lga"].str.lower() == lga.lower()]
+            if not operational_facilities.empty:
+                response = "Operational Facilities:\n" + ", ".join(operational_facilities["facility_name"].tolist())
+            else:
+                response = "No operational facilities found for the specified location."
+
+        # Health Workers
+        elif any(word in query for word in ["worker", "doctor", "nurse", "staff"]):
+            if f_id:
+                workers = workers_df[workers_df["facility_id"] == f_id]
+                role_match = [role for role in workers["role"].unique() if role.lower() in query]
+                if role_match:
+                    filtered = workers[workers["role"].str.lower() == role_match[0].lower()]
+                    response = f"{role_match[0].capitalize()}s in **{facility_name}**:\n" + ", ".join(filtered["name"].tolist())
+                else:
+                    response = f"Health Workers in **{facility_name}**:\n" + ", ".join(workers["name"].tolist())
+            else:
+                response = "Please specify a facility to see its health workers."
+
+        # Patient Visits
+        elif any(word in query for word in ["patient", "visit", "attendance"]):
+            if f_id:
+                facility_patients = patients_df[patients_df["facility_id"] == f_id]
+                response = f"Total patient visits in **{facility_name}**: {len(facility_patients)}"
+            else:
+                response = "Please specify a facility to check patient visits."
+
+        # Disease Queries
+        elif any(word in query for word in ["disease", "cases", "malaria", "cholera"]):
+            if f_id:
+                disease_match = [d for d in diseases_df["disease"].unique() if d.lower() in query]
+                if disease_match:
+                    disease_name = disease_match[0]
+                    cases = diseases_df[(diseases_df["disease"] == disease_name) & 
+                                        (diseases_df["facility_id"] == f_id)]["cases_reported"].sum()
+                    response = f"Total **{disease_name}** cases reported in **{facility_name}**: {cases}"
+                else:
+                    response = "Please specify a disease name."
+            else:
+                response = "Please specify a facility and disease name."
+
+        # Translate
+        response_translated = translate_text(response, lang)
+        st.chat_message("assistant").markdown(response_translated, unsafe_allow_html=True)
 
 # -----------------------------
 # 3. Disease Forecasting
@@ -190,5 +238,7 @@ elif tab_selection == "Inventory Overview":
 elif tab_selection == "Operational Status":
     st.header("🏥 Facility Operational Status")
     status_df = facilities_df[["facility_name", "state", "lga", "operational_status"]].copy()
-    status_df["status_color"] = status_df["operational_status"].apply(lambda x: 'green' if x.lower() == "operational" else 'red')
-    st
+    status_df["status_color"] = status_df["operational_status"].apply(
+        lambda x: 'green' if x.lower() in ["functional", "partially functional"] else 'red'
+    )
+    st.dataframe(status_df.style.applymap(lambda v: f"color:{v};", subset=["status_color"]))
