@@ -13,7 +13,7 @@ def get_connection():
         port="5439",
         dbname="dev",
         user="admin",
-        password="your_password_here"
+        password="Newpassword0703"
     )
 
 # ==============================
