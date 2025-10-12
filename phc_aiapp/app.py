@@ -1,11 +1,9 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
 from prophet import Prophet
 from deep_translator import GoogleTranslator
 import redshift_connector
-from datetime import timedelta
 
 # -------------------------------------------------
 # Database Connection (Amazon Redshift Serverless)
@@ -23,7 +21,6 @@ TABLE_PATIENTS = "staging.staging_patients_dataset"
 TABLE_DISEASES = "staging.staging_disease_report"
 TABLE_INVENTORY = "staging.staging_inventory_dataset"
 
-
 # -------------------------------------------------
 # Translation (Deep Translator)
 # -------------------------------------------------
@@ -38,13 +35,10 @@ def translate_text(text, lang):
         return text
 
 # -------------------------------------------------
-# Connect and Load Data from Redshift
+# Load data from Redshift (limited rows for memory efficiency)
 # -------------------------------------------------
 @st.cache_data(ttl=3600)
 def load_all_tables(limit=1000):
-    """
-    Load a limited number of rows from Redshift tables to prevent memory issues.
-    """
     conn = redshift_connector.connect(
         host=REDSHIFT_HOST,
         port=REDSHIFT_PORT,
@@ -54,19 +48,39 @@ def load_all_tables(limit=1000):
     )
     cursor = conn.cursor()
 
-    def read_table(table_name, columns="*", limit=1000):
+    def read_table(table_name, columns, limit=1000):
         query = f"SELECT {columns} FROM {table_name} LIMIT {limit};"
         cursor.execute(query)
         col_names = [desc[0] for desc in cursor.description]
         data = cursor.fetchall()
         return pd.DataFrame(data, columns=col_names)
 
-    # Only select essential columns and limit rows
-    facilities = read_table(TABLE_FACILITIES, columns="facility_id, facility_name", limit=limit)
-    workers = read_table(TABLE_WORKERS, columns="worker_id, facility_id, worker_name", limit=limit)
-    patients = read_table(TABLE_PATIENTS, columns="patient_id, facility_id, visit_date", limit=limit)
-    diseases = read_table(TABLE_DISEASES, columns="disease, month, cases_reported", limit=limit)
-    inventory = read_table(TABLE_INVENTORY, columns="facility_id, item_name, stock_level, reorder_level, last_restock_date", limit=limit)
+    # Load tables with actual columns
+    facilities = read_table(
+        TABLE_FACILITIES,
+        "facility_id, facility_name, state, lga, ownership, type, latitude, longitude, operational_status, number_of_beds, average_daily_patients, health_workers",
+        limit
+    )
+    workers = read_table(
+        TABLE_WORKERS,
+        "worker_id, facility_id, name, role, qualification, years_experience, gender, specialization, shift, availability_status",
+        limit
+    )
+    patients = read_table(
+        TABLE_PATIENTS,
+        "patient_id, facility_id, gender, age, visit_date, diagnosis, treatment, outcome",
+        limit
+    )
+    diseases = read_table(
+        TABLE_DISEASES,
+        "report_id, facility_id, month, disease, cases_reported, deaths",
+        limit
+    )
+    inventory = read_table(
+        TABLE_INVENTORY,
+        "item_id, facility_id, item_name, stock_level, reorder_level, last_restock_date",
+        limit
+    )
 
     cursor.close()
     conn.close()
@@ -75,7 +89,7 @@ def load_all_tables(limit=1000):
     for df in (facilities, workers, patients, diseases, inventory):
         df.columns = [c.lower() for c in df.columns]
 
-    # Parse dates
+    # Parse dates safely
     if "visit_date" in patients.columns:
         patients["visit_date"] = pd.to_datetime(patients["visit_date"], errors="coerce")
     if "month" in diseases.columns:
@@ -85,15 +99,14 @@ def load_all_tables(limit=1000):
 
     return facilities, workers, patients, diseases, inventory
 
+# Load all tables
 facilities_df, workers_df, patients_df, diseases_df, inventory_df = load_all_tables()
 
 # -------------------------------------------------
 # Streamlit UI
 # -------------------------------------------------
 st.set_page_config(page_title="PHC AI Dashboard", layout="wide")
-
 st.title("🏥 PHC AI Data Dashboard (Redshift Serverless)")
-
 tabs = st.tabs(["📊 Facility Dashboard", "🤖 AI Chatbot", "📈 Forecasting"])
 
 # -------------------------------------------------
@@ -132,7 +145,6 @@ with tabs[1]:
 
     if st.button("Ask"):
         query_lower = query.lower()
-
         response = "I’m not sure how to answer that yet."
 
         # Detect stock queries
