@@ -12,15 +12,15 @@ from datetime import timedelta
 # -------------------------------------------------
 REDSHIFT_HOST = "dfa-datafest.962626097808.eu-north-1.redshift-serverless.amazonaws.com"
 REDSHIFT_PORT = 5439
-REDSHIFT_DB = "dev"
+REDSHIFT_DB = "datafest"
 REDSHIFT_USER = "admin"
 REDSHIFT_PASSWORD = "Newpassword0703"
 
-TABLE_FACILITIES = "staging.Nigeria_phc"
-TABLE_WORKERS = "staging.health_workers"
-TABLE_PATIENTS = "staging.patients_dataset"
-TABLE_DISEASES = "staging.disease_report"
-TABLE_INVENTORY = "staging.inventory_dataset"
+TABLE_FACILITIES = "staging.staging_nigeria_phc"
+TABLE_WORKERS = "staging.staging_health_workers"
+TABLE_PATIENTS = "staging.staging_patients_dataset"
+TABLE_DISEASES = "staging.staging_disease_report"
+TABLE_INVENTORY = "staging.staging_inventory_dataset"
 
 # -------------------------------------------------
 # Translation (Deep Translator)
