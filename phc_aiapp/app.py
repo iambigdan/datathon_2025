@@ -43,26 +43,30 @@ def translate_text(text: str, target_lang: str) -> str:
 # -----------------------------
 @st.cache_data(ttl=3600)
 def load_all_tables():
-    """Load staging tables from Redshift into pandas DataFrames."""
+    """Load staging tables from Redshift into pandas DataFrames (fixed for Redshift Serverless)."""
     from sqlalchemy import create_engine
 
+    # Create connection URL
     engine = create_engine(
         f"postgresql+psycopg2://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}",
         connect_args={"sslmode": "prefer"},
-        execution_options={"isolation_level": "AUTOCOMMIT"}
+        execution_options={"isolation_level": "AUTOCOMMIT"},
+        pool_pre_ping=True
     )
 
-    facilities = pd.read_sql(f"SELECT * FROM {TABLE_FACILITIES}", engine)
-    workers = pd.read_sql(f"SELECT * FROM {TABLE_WORKERS}", engine)
-    patients = pd.read_sql(f"SELECT * FROM {TABLE_PATIENTS}", engine)
-    diseases = pd.read_sql(f"SELECT * FROM {TABLE_DISEASES}", engine)
-    inventory = pd.read_sql(f"SELECT * FROM {TABLE_INVENTORY}", engine)
+    # Manually connect to avoid automatic PostgreSQL parameter checks
+    with engine.connect() as conn:
+        facilities = pd.read_sql(f"SELECT * FROM {TABLE_FACILITIES}", conn)
+        workers = pd.read_sql(f"SELECT * FROM {TABLE_WORKERS}", conn)
+        patients = pd.read_sql(f"SELECT * FROM {TABLE_PATIENTS}", conn)
+        diseases = pd.read_sql(f"SELECT * FROM {TABLE_DISEASES}", conn)
+        inventory = pd.read_sql(f"SELECT * FROM {TABLE_INVENTORY}", conn)
 
-    # normalize columns
+    # Normalize column names
     for df in (facilities, workers, patients, diseases, inventory):
         df.columns = [c.lower() for c in df.columns]
 
-    # parse dates
+    # Parse dates where applicable
     if "visit_date" in patients.columns:
         patients["visit_date"] = pd.to_datetime(patients["visit_date"], errors="coerce")
     if "month" in diseases.columns:
@@ -71,7 +75,6 @@ def load_all_tables():
         inventory["last_restock_date"] = pd.to_datetime(inventory["last_restock_date"], errors="coerce")
 
     return facilities, workers, patients, diseases, inventory
-
 facilities_df, workers_df, patients_df, diseases_df, inventory_df = load_all_tables()
 
 # -----------------------------
