@@ -16,11 +16,11 @@ REDSHIFT_DB = "dev"
 REDSHIFT_USER = "admin"
 REDSHIFT_PASSWORD = "Newpassword0703"
 
-TABLE_FACILITIES = "staging_Nigeria_phc"
-TABLE_WORKERS = "staging_health_workers"
-TABLE_PATIENTS = "staging_patients_dataset"
-TABLE_DISEASES = "staging_disease_report"
-TABLE_INVENTORY = "staging_inventory_dataset"
+TABLE_FACILITIES = "staging.Nigeria_phc"
+TABLE_WORKERS = "staging.health_workers"
+TABLE_PATIENTS = "staging.patients_dataset"
+TABLE_DISEASES = "staging.disease_report"
+TABLE_INVENTORY = "staging.inventory_dataset"
 
 # -------------------------------------------------
 # Translation (Deep Translator)
