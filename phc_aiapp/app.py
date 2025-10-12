@@ -44,24 +44,28 @@ def translate_text(text: str, target_lang: str) -> str:
 @st.cache_data(ttl=3600)
 def load_all_tables():
     """Load staging tables from Redshift into pandas DataFrames."""
-    url = f"postgresql+psycopg2://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}"
-    engine = create_engine(url, connect_args={})
-    # read tables
+    from sqlalchemy import create_engine
+
+    engine = create_engine(
+        f"postgresql+psycopg2://{REDSHIFT_USER}:{REDSHIFT_PASSWORD}@{REDSHIFT_HOST}:{REDSHIFT_PORT}/{REDSHIFT_DB}",
+        connect_args={"sslmode": "prefer"},
+        execution_options={"isolation_level": "AUTOCOMMIT"}
+    )
+
     facilities = pd.read_sql(f"SELECT * FROM {TABLE_FACILITIES}", engine)
     workers = pd.read_sql(f"SELECT * FROM {TABLE_WORKERS}", engine)
     patients = pd.read_sql(f"SELECT * FROM {TABLE_PATIENTS}", engine)
     diseases = pd.read_sql(f"SELECT * FROM {TABLE_DISEASES}", engine)
     inventory = pd.read_sql(f"SELECT * FROM {TABLE_INVENTORY}", engine)
 
-    # normalize column names to lower-case for safety
+    # normalize columns
     for df in (facilities, workers, patients, diseases, inventory):
         df.columns = [c.lower() for c in df.columns]
 
-    # cast/parse dates if present
+    # parse dates
     if "visit_date" in patients.columns:
         patients["visit_date"] = pd.to_datetime(patients["visit_date"], errors="coerce")
     if "month" in diseases.columns:
-        # month might be string or date
         diseases["month_dt"] = pd.to_datetime(diseases["month"], errors="coerce")
     if "last_restock_date" in inventory.columns:
         inventory["last_restock_date"] = pd.to_datetime(inventory["last_restock_date"], errors="coerce")
