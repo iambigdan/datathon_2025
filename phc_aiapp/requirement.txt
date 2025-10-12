@@ -6,3 +6,4 @@ plotly
 prophet
 googletrans==4.0.0-rc1
 python-dotenv
+plotly==5.24.1
