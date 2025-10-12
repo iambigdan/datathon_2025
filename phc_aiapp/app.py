@@ -17,11 +17,12 @@ REDSHIFT_USER = "admin"
 REDSHIFT_PASSWORD = "Newpassword0703"
 
 # Fully qualified table names
-TABLE_FACILITIES = '"datafest"."staging"."staging_nigeria_phc"'
-TABLE_WORKERS = '"datafest"."staging"."staging_health_workers"'
-TABLE_PATIENTS = '"datafest"."staging"."staging_patients_dataset"'
-TABLE_DISEASES = '"datafest"."staging"."staging_disease_report"'
-TABLE_INVENTORY = '"datafest"."staging"."staging_inventory_dataset"'
+TABLE_FACILITIES = "staging.staging_nigeria_phc"
+TABLE_WORKERS = "staging.staging_health_workers"
+TABLE_PATIENTS = "staging.staging_patients_dataset"
+TABLE_DISEASES = "staging.staging_disease_report"
+TABLE_INVENTORY = "staging.staging_inventory_dataset"
+
 
 # -------------------------------------------------
 # Translation (Deep Translator)
