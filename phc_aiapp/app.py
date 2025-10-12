@@ -41,7 +41,10 @@ def translate_text(text, lang):
 # Connect and Load Data from Redshift
 # -------------------------------------------------
 @st.cache_data(ttl=3600)
-def load_all_tables():
+def load_all_tables(limit=1000):
+    """
+    Load a limited number of rows from Redshift tables to prevent memory issues.
+    """
     conn = redshift_connector.connect(
         host=REDSHIFT_HOST,
         port=REDSHIFT_PORT,
@@ -51,18 +54,19 @@ def load_all_tables():
     )
     cursor = conn.cursor()
 
-    def read_table(table_name):
-        query = f"SELECT * FROM {table_name};"
+    def read_table(table_name, columns="*", limit=1000):
+        query = f"SELECT {columns} FROM {table_name} LIMIT {limit};"
         cursor.execute(query)
-        columns = [desc[0] for desc in cursor.description]
+        col_names = [desc[0] for desc in cursor.description]
         data = cursor.fetchall()
-        return pd.DataFrame(data, columns=columns)
+        return pd.DataFrame(data, columns=col_names)
 
-    facilities = read_table(TABLE_FACILITIES)
-    workers = read_table(TABLE_WORKERS)
-    patients = read_table(TABLE_PATIENTS)
-    diseases = read_table(TABLE_DISEASES)
-    inventory = read_table(TABLE_INVENTORY)
+    # Only select essential columns and limit rows
+    facilities = read_table(TABLE_FACILITIES, columns="facility_id, facility_name", limit=limit)
+    workers = read_table(TABLE_WORKERS, columns="worker_id, facility_id, worker_name", limit=limit)
+    patients = read_table(TABLE_PATIENTS, columns="patient_id, facility_id, visit_date", limit=limit)
+    diseases = read_table(TABLE_DISEASES, columns="disease, month, cases_reported", limit=limit)
+    inventory = read_table(TABLE_INVENTORY, columns="facility_id, item_name, stock_level, reorder_level, last_restock_date", limit=limit)
 
     cursor.close()
     conn.close()
