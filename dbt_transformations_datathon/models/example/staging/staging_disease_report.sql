@@ -1,4 +1,9 @@
-CREATE TABLE intermediate_disease_report AS
+{{ config(
+    materialized = 'table',
+    schema = 'mart'
+) }}
+
+CREATE TABLE mart_disease_report AS
 SELECT
     report_id,
     facility_id,

@@ -13,6 +13,9 @@ Architecture
 
 - dbt: Cleans, models, and materializes data into analytics-ready schemas.
 
+Data Source
+=================================
+To read on how the data used for this project was obtained, click here [How Data Was Generated](HOW_DATA_WAS_GENERATED.md)
 
 Tech Stack
 =================================

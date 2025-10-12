@@ -1,4 +1,9 @@
-CREATE TABLE intermediate_Nigeria_phc AS
+{{ config(
+    materialized = 'table',
+    schema = 'mart'
+) }}
+
+CREATE TABLE mart_Nigeria_phc AS
 SELECT
     facility_id,
     facility_name,

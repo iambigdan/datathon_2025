@@ -1,4 +1,9 @@
-CREATE TABLE intermediate_inventory_dataset AS
+{{ config(
+    materialized = 'table',
+    schema = 'mart'
+) }}
+
+CREATE TABLE mart_inventory_dataset AS
 SELECT
     item_id VARCHAR,
     facility_id VARCHAR,
